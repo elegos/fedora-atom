@@ -61,7 +61,7 @@
    mcontext_t uc_mcontext;
    // Other fields are not used by V8, don't define them here.
 --- a/vendor/breakpad/src/client/linux/dump_writer_common/ucontext_reader.cc
-+++ b/vendor/breakpad/src/client\/linux/dump_writer_common/ucontext_reader.cc
++++ b/vendor/breakpad/src/client/linux/dump_writer_common/ucontext_reader.cc
 @@ -40,15 +40,15 @@ namespace google_breakpad {
 
  #if defined(__i386__)
@@ -160,7 +160,7 @@
  #elif _MIPS_SIM == _ABIO32
 
 --- a/vendor/breakpad/src/client/linux/dump_writer_common/ucontext_reader.h
-+++ b/vendor/breakpad/src/client\/linux/dump_writer_common/ucontext_reader.h
++++ b/vendor/breakpad/src/client/linux/dump_writer_common/ucontext_reader.h
 @@ -41,21 +41,21 @@ namespace google_breakpad {
 
  // Wraps platform-dependent implementations of accessors to ucontext structs.
@@ -189,7 +189,7 @@
  };
 
 --- a/vendor/breakpad/src/client/linux/handler/exception_handler.cc
-+++ b/vendor/breakpad/src/client\/linux/handler/exception_handler.cc
++++ b/vendor/breakpad/src/client/linux/handler/exception_handler.cc
 @@ -439,9 +439,9 @@ bool ExceptionHandler::HandleSignal(int sig, siginfo_t* info, void* uc) {
    // Fill in all the holes in the struct to make Valgrind happy.
    memset(&g_crash_context_, 0, sizeof(g_crash_context_));
@@ -221,7 +221,7 @@
    return HandleSignal(sig, &siginfo, &context);
  }
 --- a/vendor/breakpad/src/client/linux/handler/exception_handler.h
-+++ b/vendor/breakpad/src/client\/linux/handler/exception_handler.h
++++ b/vendor/breakpad/src/client/linux/handler/exception_handler.h
 @@ -191,7 +191,7 @@ class ExceptionHandler {
    struct CrashContext {
      siginfo_t siginfo;
@@ -232,7 +232,7 @@
      // #ifdef this out because FP state is not part of user ABI for Linux ARM.
      // In case of MIPS Linux FP state is already part of struct
 --- a/vendor/breakpad/src/client/linux/microdump_writer/microdump_writer.cc
-+++ b/vendor/breakpad/src/client\/linux/microdump_writer/microdump_writer.cc
++++ b/vendor/breakpad/src/client/linux/microdump_writer/microdump_writer.cc
 @@ -560,7 +560,7 @@ class MicrodumpWriter {
 
    void* Alloc(unsigned bytes) { return dumper_->allocator()->Alloc(bytes); }
@@ -243,7 +243,7 @@
    const google_breakpad::fpstate_t* const float_state_;
  #endif
 --- a/vendor/breakpad/src/client/linux/minidump_writer/minidump_writer.cc
-+++ b/vendor/breakpad/src/client\/linux/minidump_writer/minidump_writer.cc
++++ b/vendor/breakpad/src/client/linux/minidump_writer/minidump_writer.cc
 @@ -1248,7 +1248,7 @@ class MinidumpWriter {
    const int fd_;  // File descriptor where the minidum should be written.
    const char* path_;  // Path to the file where the minidum should be written.

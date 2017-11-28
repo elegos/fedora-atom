@@ -1,0 +1,30 @@
+--- a/script/build
++++ b/script/build
+@@ -13,7 +13,7 @@ VENDOR_DIR = os.path.join(SOURCE_ROOT, 'vendor')
+ TARGETS = ['chromiumcontent_all']
+ COMPONENTS = ['static_library', 'shared_library', 'ffmpeg']
+
+-NINJA = os.path.join(VENDOR_DIR, 'depot_tools', 'ninja')
++NINJA = os.path.join('/', 'usr', 'bin', 'ninja-build')
+ if sys.platform == 'win32':
+   NINJA = '{0}.exe'.format(NINJA)
+
+--- a/script/update
++++ b/script/update
+@@ -62,9 +62,7 @@ def main():
+     else:
+       gclient_sync(chromium_version(), args.clean, git_cache)
+
+-  if sys.platform == 'linux2':
+-    install_sysroot()
+-  elif sys.platform in ['win32', 'cygwin']:
++  if sys.platform in ['win32', 'cygwin']:
+     update_toolchain_json()
+
+   target_arch = args.target_arch
+@@ -73,7 +71,6 @@ def main():
+
+   return (apply_patches(args.skip_patches) or
+           copy_chromiumcontent_files() or
+-          update_clang() or
+           run_gn(target_arch, args.defines))

@@ -40,6 +40,18 @@ RUN dnf install -y \
   nss-devel \
   pciutils-devel
 
+# Build electron's libchromiumcontent
+RUN dnf install -y \
+  bison \
+  gperf \
+  gyp \
+  libffi-devel \
+  libgnome-keyring-devel \
+  mesa-libGL-devel \
+  ninja-build \
+  pulseaudio-libs-devel \
+  v8
+
 RUN dnf install -y \
   xcb-util-devel libXdamage-devel libXcursor-devel \
   libXcomposite-devel libXext-devel libXfixes-devel \
