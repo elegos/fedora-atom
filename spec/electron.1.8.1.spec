@@ -78,8 +78,10 @@ Patch6: libchromiumcontent-libdrm-multifix.patch
 Patch7: libchromiumcontent-client-native-pixmap-dmabuf.patch
 # libchromiumcontent > v8: if using their mksnapshot, an unknown symbol exception will raise
 Patch8: libchromiumcontent-v8-use-system-mksnapshot.patch
+# libchromiumcontent > v8: fix for missing GetArrayBufferAllocator call
+Patch9: libchromiumcontent-v8-get-array-buffer-allocator-fix.patch
 # libchromiumcontent > webkit: missing functional import
-Patch9: libchromiumcontent-webkit-fix.patch
+Patch10: libchromiumcontent-webkit-fix.patch
 
 %description
 The Electron framework lets you write cross-platform desktop applications using
@@ -133,7 +135,8 @@ cd %{srcdir}
   sed -i 's|<libdrm-makedev-fix-patch>|%{P:6}|' %{srcdir}/script/build-libchromiumcontent.py
   sed -i 's|<dma-buf-sync-patch>|%{P:7}|' %{srcdir}/script/build-libchromiumcontent.py
   sed -i 's|<v8-use-system-mksnapshot>|%{P:8}|' %{srcdir}/script/build-libchromiumcontent.py
-  sed -i 's|<webkit-fix>|%{P:9}|' %{srcdir}/script/build-libchromiumcontent.py
+  sed -i 's|<v8-get-array-buffer-allocator>|%{P:9}|' %{srcdir}/script/build-libchromiumcontent.py
+  sed -i 's|<webkit-fix>|%{P:10}|' %{srcdir}/script/build-libchromiumcontent.py
 
   # reset the previously src patched files
   if [ -d "%{cc_dir}/src" ]; then
