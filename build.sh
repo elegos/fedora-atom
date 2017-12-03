@@ -60,6 +60,7 @@ say "@b[[Building...]]"
 mkdir -p build/RPMS
 mkdir -p build/SRPMS
 docker run --rm -ti ${EXTERNAL_SRC} \
+  --volume `pwd`/spec:/home/makerpm/spec:ro \
 	--volume `pwd`/build/RPMS:/home/makerpm/rpmbuild/RPMS \
 	--volume `pwd`/build/SRPMS:/home/makerpm/rpmbuild/SRPMS \
-	${IMG} -v 1.22.1
+	${IMG} --target electron --version 1.8.1

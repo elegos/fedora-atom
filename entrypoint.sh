@@ -1,20 +1,7 @@
 #!/usr/bin/env bash
-EXIT_NO_SOURCE=1
-EXIT_NO_SPEC=2
-EXIT_NO_ELECTRON_VERSION=3
-EXIT_NO_APM_VERSION=4
+WDIR=`pwd`
 
-ATOM_VERSION=1.22.1
-
-declare -A ELECTRON_VERSIONS
-ELECTRON_VERSIONS=(
-  [1.22.1]=1.8.1
-)
-
-declare -A APM_VERSIONS
-APM_VERSIONS=(
-  [1.22.1]=1.18.8
-)
+EXIT_NO_SPEC=1
 
 function say {
 	echo -e "$@" | sed \
@@ -35,11 +22,18 @@ function sayreplace {
   say \\e[1A$@
 }
 
+TARGET=
+TARGET_VERSION=
+
 while [ $# -ne 0 ]; do
   case $1 in
+    --target|-t)
+      TARGET=$2
+      shift
+    ;;
     --version|-v)
       if ! [ "$2" = "" ]; then
-        ATOM_VERSION=$2
+        TARGET_VERSION=$2
         shift
       fi
       shift
@@ -48,53 +42,37 @@ while [ $# -ne 0 ]; do
   shift
 done
 
-ELECTRON_VERSION=${ELECTRON_VERSIONS[${ATOM_VERSION}]}
-APM_VERSION=${APM_VERSIONS[${ATOM_VERSION}]}
+if [ "${TARGET}" = "" ] || [ "${TARGET_VERSION}" = "" ]; then
+  say ""
+  say "@b[[Usage:]]"
+  say "$0 --target[|-t] <application> --version[|-v] <version>"
+  say ""
 
-if [ "$ELECTRON_VERSION" = "" ]; then
-	exit ${EXIT_NO_ELECTRON_VERSION}
+  exit 0
 fi
 
-if [ "$APM_VERSION" = "" ]; then
-  exit ${EXIT_NO_APM_VERSION}
-fi
+say ""
+say "@b@green[[TARGET : @b@red${TARGET}]]"
+say "@b@green[[VERSION: @b@red${TARGET_VERSION}]]"
 
-say "@b@green[[APM VERSION     : @b@red${APM_VERSION}]]"
-say "@b@green[[ATOM VERSION    : @b@red${ATOM_VERSION}]]"
-say "@b@green[[ELECTRON VERSION: @b@red${ELECTRON_VERSION}]]"
-
-if ! [ -f "spec/atom.${ATOM_VERSION}.spec" ]; then
-  say "@b@red[[There is no such spec file for Atom]]"
-  say "@b[[`ls spec/atom.*`]]"
+SPEC_FOLDER="${WDIR}/spec/${TARGET}/${TARGET_VERSION}"
+SPEC_FILE="${TARGET}.spec"
+SPEC_PATH="${SPEC_FOLDER}/${SPEC_FILE}"
+if ! [ -f "${SPEC_PATH}" ]; then
+  say ""
+  say "@b@red[[${SPEC_PATH} was not found]]"
+  say ""
   exit ${EXIT_NO_SPEC}
 fi
 
 # Create the build folders tree
+RPMDIR="${WDIR}/rpmbuild"
 rpmdev-setuptree
-cd rpmbuild
+cd "${RPMDIR}"
 
-cp ~/spec/atom.${ATOM_VERSION}.spec SPECS/atom.spec
-cp ~/spec/electron.${ELECTRON_VERSION}.spec SPECS/electron.spec
-cp ~/spec/apm.${APM_VERSION}.spec SPECS/apm.spec
-
-# BUILD ELECTRON
-if [ -d "/home/makerpm/patch/electron.${ELECTRON_VERSION}" ]; then
-  cp -r /home/makerpm/patch/electron.${ELECTRON_VERSION}/* SOURCES/
-fi
+cp ${SPEC_PATH} "${RPMDIR}/SPECS/"
+cp ${SPEC_FOLDER}/*.patch "${RPMDIR}/SOURCES/"
 
 cd SPECS
-spectool -g -R electron.spec
-rpmbuild -ba electron.spec
-
-# BUILD APM
-cd ~/rpmbuild
-rm -rf SOURCES/*
-if [ -d "/home/makerpm/patch/apm.${APM_VERSION}" ]; then
-  cp -r /home/makerpm/patch/apm.${APM_VERSION}/* SOURCES/
-fi
-
-cd SPECS
-#spectool -g -R apm.spec
-#rpmbuild -ba apm.spec
-
-# BUILD ATOM
+spectool -g -R ${SPEC_FILE}
+rpmbuild -ba ${SPEC_FILE}

@@ -74,12 +74,11 @@ RUN useradd makerpm -o -u $UID \
 
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+VOLUME ["/home/makerpm/spec"]
 WORKDIR /home/makerpm
 ENTRYPOINT ["/entrypoint.sh"]
 
 USER makerpm
-COPY ./.wgetrc /home/makerpm/.wgetrc
 COPY ./spec /home/makerpm/spec
-COPY ./patch /home/makerpm/patch
 # Create the directory, so that the RPMS and SRPMS folders can be mounted as local user
 RUN mkdir /home/makerpm/rpmbuild
