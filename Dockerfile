@@ -19,7 +19,25 @@ RUN dnf install -y \
 
 # electron
 RUN dnf install -y \
-    clang
+    alsa-lib-devel \
+    clang \
+    cups-devel \
+    dbus-devel \
+    GConf2-devel \
+    glib2-devel \
+    gtk2-devel \
+    libcap-devel \
+    libnotify-devel \
+    libX11-devel \
+    libXi-devel \
+    libXrandr-devel \
+    libXScrnSaver-devel \
+    libxslt-devel \
+    libXtst-devel \
+    npm \
+    nss-devel \
+    pciutils-devel \
+    which
 
 # Create a packager user
 RUN useradd makerpm -o -u $UID \
