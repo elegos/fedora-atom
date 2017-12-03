@@ -63,4 +63,4 @@ docker run --rm -ti ${EXTERNAL_SRC} \
   --volume `pwd`/spec:/home/makerpm/spec:ro \
 	--volume `pwd`/build/RPMS:/home/makerpm/rpmbuild/RPMS \
 	--volume `pwd`/build/SRPMS:/home/makerpm/rpmbuild/SRPMS \
-	${IMG} --target electron --version 1.8.1
+	${IMG} --target electron --version 1.8.2beta2
