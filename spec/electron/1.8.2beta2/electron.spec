@@ -15,20 +15,26 @@ Group:   Applications/System
 License: MIT
 URL:     https://github.com/electron/electron
 
-# libchromiumcontent dependencies
-BuildRequires: bison
-BuildRequires: gperf
-BuildRequires: ncurses-compat-libs
+Patch0: libcc-use-system-root.patch
+Patch1: libcc-v8-use-system-root.patch
+Patch2: libcc-readdir-r-fix.patch
+Patch3: libcc-third-party-libdrm-multifix.patch
+Patch4: libcc-client-native-pixmap-dmabuf.patch
+Patch5: libcc-third-party-webkit-missing-functional-import.patch
 
-# electron dependencies
 BuildRequires: alsa-lib-devel
+BuildRequires: bison
 BuildRequires: clang
 BuildRequires: cups-devel
 BuildRequires: dbus-devel
 BuildRequires: GConf2-devel
 BuildRequires: glib2-devel
+BuildRequires: gperf
 BuildRequires: gtk2-devel
+BuildRequires: libatomic
 BuildRequires: libcap-devel
+BuildRequires: libffi-devel
+BuildRequires: libgnome-keyring-devel
 BuildRequires: libnotify-devel
 BuildRequires: libX11-devel
 BuildRequires: libXi-devel
@@ -36,8 +42,12 @@ BuildRequires: libXrandr-devel
 BuildRequires: libXScrnSaver-devel
 BuildRequires: libxslt-devel
 BuildRequires: libXtst-devel
+BuildRequires: mesa-libGL-devel
+BuildRequires: ncurses-compat-libs
+BuildRequires: npm
 BuildRequires: nss-devel
 BuildRequires: pciutils-devel
+BuildRequires: pulseaudio-libs-devel
 BuildRequires: which
 
 %description
@@ -82,6 +92,15 @@ E_BOOTSTRAP_EXTRA_PARAMS=""
   # avoid compiling the same version multiple times
   if ! [ -f $CC_COMPILED_VERSION_FILE ] || ! [ "$CURRENT_VERSION" = "`cat $CC_COMPILED_VERSION_FILE`" ]; then
     pushd %{cc_dir}
+    # place the patches
+    cp %{P:0} patches/000-system-root.patch
+    cp %{P:1} patches/v8/000-system-root.patch
+    cp %{P:2} patches/000-readdir-r-fix.patch
+    cp %{P:4} patches/000-dmabuf-fix.patch
+    mkdir -p patches/third_party/libdrm
+    cp %{P:3} patches/third_party/libdrm/000-multi-fix.patch
+    mkdir -p patches/third_party/WebKit
+    cp %{P:5} patches/third_party/WebKit/000-missing-functional-import.patch
     # one-time setup
     ./script/bootstrap
     # build

@@ -26,7 +26,10 @@ RUN dnf install -y \
     GConf2-devel \
     glib2-devel \
     gtk2-devel \
+    libatomic \
     libcap-devel \
+    libffi-devel \
+    libgnome-keyring-devel \
     libnotify-devel \
     libX11-devel \
     libXi-devel \
@@ -34,9 +37,11 @@ RUN dnf install -y \
     libXScrnSaver-devel \
     libxslt-devel \
     libXtst-devel \
+    mesa-libGL-devel \
     npm \
     nss-devel \
     pciutils-devel \
+    pulseaudio-libs-devel \
     which
 
 # Create a packager user
