@@ -84,7 +84,8 @@ E_BOOTSTRAP_EXTRA_PARAMS=""
 # libchromiumcontent
 %if 0%{?compile_cc}
   E_BOOTSTRAP_EXTRA_PARAMS="--libcc_static_library_path %{cc_dir}/src/out-%{arch}/static_library"
-  E_BOOTSTRAP_EXTRA_PARAMS+=" --libcc_source_path %{cc_dir}"
+  E_BOOTSTRAP_EXTRA_PARAMS+=" --libcc_shared_library_path %{cc_dir}/src/out-%{arch}/shared_library"
+  E_BOOTSTRAP_EXTRA_PARAMS+=" --libcc_source_path %{cc_dir}/src"
 
   CC_COMPILED_VERSION_FILE=%{_builddir}/cc_compiled_version
   CURRENT_VERSION=`cd %{cc_dir} && git log -n1|grep commit|awk '{ print $2 }'`
@@ -112,10 +113,14 @@ E_BOOTSTRAP_EXTRA_PARAMS=""
 %endif
 
 pushd %{e_dir}
-./script/bootstrap.py $E_BOOTSTRAP_EXTRA_PARAMS \
-  --clang_dir /usr \
-  --target_arch %{arch} \
-  --verbose
+  ./script/bootstrap.py $E_BOOTSTRAP_EXTRA_PARAMS \
+    --clang_dir /usr \
+    --target_arch %{arch} \
+    --verbose
+
+  ./script/build.py -c Release
+
+  ./script/create-dist.py
 popd
 
 %install
