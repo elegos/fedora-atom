@@ -23,6 +23,7 @@ Patch4: libcc-client-native-pixmap-dmabuf.patch
 Patch5: libcc-third-party-webkit-missing-functional-import.patch
 Patch6: electron-use-system-root.patch
 Patch7: electron-ucontext-fix.patch
+Patch8: electron-create-dist-chromium-dir.patch
 
 BuildRequires: alsa-lib-devel
 BuildRequires: bison
@@ -87,6 +88,8 @@ pushd %{e_dir}
   patch -p1 -i %{P:6}
   # Patch: ucontext fix (node / breakpad vendors)
   patch -p1 -i %{P:7}
+  # create-dist.py: add chromium_dir argument
+  patch -p1 -i %{P:8}
 popd
 
 %build
@@ -96,6 +99,7 @@ E_BOOTSTRAP_EXTRA_PARAMS=""
   E_BOOTSTRAP_EXTRA_PARAMS="--libcc_static_library_path %{cc_dir}/dist/main/static_library"
   E_BOOTSTRAP_EXTRA_PARAMS+=" --libcc_shared_library_path %{cc_dir}/dist/main/shared_library"
   E_BOOTSTRAP_EXTRA_PARAMS+=" --libcc_source_path %{cc_dir}/dist/main/src"
+  E_CREATE_DIST_EXTRA_PARAMS="--chromium_dir %{cc_dir}/dist/main/static_library"
 
   CC_COMPILED_VERSION_FILE=%{_builddir}/cc_compiled_version
   CURRENT_VERSION=`cd %{cc_dir} && git log -n1|grep commit|awk '{ print $2 }'`
@@ -133,7 +137,7 @@ pushd %{e_dir}
 
   ./script/build.py -c Release
 
-  ./script/create-dist.py
+  ./script/create-dist.py $E_CREATE_DIST_EXTRA_PARAMS
 popd
 
 %install

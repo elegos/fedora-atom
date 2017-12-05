@@ -1,0 +1,40 @@
+--- a/script/create-dist.py
++++ b/script/create-dist.py
+@@ -82,6 +82,11 @@ def main():
+   rm_rf(DIST_DIR)
+   os.makedirs(DIST_DIR)
+ 
++  args = parse_args()
++
++  if args.chromium_dir:
++    globals().update(CHROMIUM_DIR=args.chromium_dir)
++
+   force_build()
+   create_symbols()
+   copy_binaries()
+@@ -92,8 +97,6 @@ def main():
+     copy_vcruntime_binaries()
+     copy_ucrt_binaries()
+ 
+-  args = parse_args()
+-
+   if PLATFORM != 'win32' and not args.no_api_docs:
+     create_api_json_schema()
+     create_typescript_definitions()
+@@ -108,7 +111,6 @@ def main():
+   create_ffmpeg_zip()
+   create_symbols_zip()
+ 
+-
+ def force_build():
+   build = os.path.join(SOURCE_ROOT, 'script', 'build.py')
+   execute([sys.executable, build, '-c', 'Release'])
+@@ -307,6 +309,8 @@ def parse_args():
+   parser.add_argument('--no_api_docs',
+                       action='store_true',
+                       help='Skip generating the Electron API Documentation!')
++  parser.add_argument('--chromium_dir',
++                      help='Specify a custom libchromiumcontent directory if manually compiled')
+   return parser.parse_args()
+ 
+ 
