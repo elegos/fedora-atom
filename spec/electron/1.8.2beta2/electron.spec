@@ -82,7 +82,7 @@ pushd %{e_dir}
   git submodule update --init --recursive
   # Reset the submodules to apply the patches multiple times
   pushd %{e_dir}/vendor/node && git reset --hard && popd
-  pushd %{e_dir}/vendor/breakpad && git reset --hard && popd
+  pushd %{e_dir}/vendor/breakpad/src && git reset --hard && popd
   # Patch: system root
   patch -p1 -i %{P:6}
   # Patch: ucontext fix (node / breakpad vendors)
@@ -125,6 +125,7 @@ E_BOOTSTRAP_EXTRA_PARAMS=""
 %endif
 
 pushd %{e_dir}
+  export LDFLAGS="%{__global_ldflags} -latomic"
   ./script/bootstrap.py $E_BOOTSTRAP_EXTRA_PARAMS \
     --clang_dir /usr \
     --target_arch %{arch} \
