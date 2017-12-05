@@ -21,6 +21,8 @@ Patch2: libcc-readdir-r-fix.patch
 Patch3: libcc-third-party-libdrm-multifix.patch
 Patch4: libcc-client-native-pixmap-dmabuf.patch
 Patch5: libcc-third-party-webkit-missing-functional-import.patch
+Patch6: electron-use-system-root.patch
+Patch7: electron-ucontext-fix.patch
 
 BuildRequires: alsa-lib-devel
 BuildRequires: bison
@@ -77,15 +79,23 @@ fi
 pushd %{e_dir}
   git reset --hard
   git checkout v1.8.2-beta.2
+  git submodule update --init --recursive
+  # Reset the submodules to apply the patches multiple times
+  pushd %{e_dir}/vendor/node && git reset --hard && popd
+  pushd %{e_dir}/vendor/breakpad && git reset --hard && popd
+  # Patch: system root
+  patch -p1 -i %{P:6}
+  # Patch: ucontext fix (node / breakpad vendors)
+  patch -p1 -i %{P:7}
 popd
 
 %build
 E_BOOTSTRAP_EXTRA_PARAMS=""
 # libchromiumcontent
 %if 0%{?compile_cc}
-  E_BOOTSTRAP_EXTRA_PARAMS="--libcc_static_library_path %{cc_dir}/src/out-%{arch}/static_library"
-  E_BOOTSTRAP_EXTRA_PARAMS+=" --libcc_shared_library_path %{cc_dir}/src/out-%{arch}/shared_library"
-  E_BOOTSTRAP_EXTRA_PARAMS+=" --libcc_source_path %{cc_dir}/src"
+  E_BOOTSTRAP_EXTRA_PARAMS="--libcc_static_library_path %{cc_dir}/dist/main/static_library"
+  E_BOOTSTRAP_EXTRA_PARAMS+=" --libcc_shared_library_path %{cc_dir}/dist/main/shared_library"
+  E_BOOTSTRAP_EXTRA_PARAMS+=" --libcc_source_path %{cc_dir}/dist/main/src"
 
   CC_COMPILED_VERSION_FILE=%{_builddir}/cc_compiled_version
   CURRENT_VERSION=`cd %{cc_dir} && git log -n1|grep commit|awk '{ print $2 }'`
@@ -93,21 +103,23 @@ E_BOOTSTRAP_EXTRA_PARAMS=""
   # avoid compiling the same version multiple times
   if ! [ -f $CC_COMPILED_VERSION_FILE ] || ! [ "$CURRENT_VERSION" = "`cat $CC_COMPILED_VERSION_FILE`" ]; then
     pushd %{cc_dir}
-    # place the patches
-    cp %{P:0} patches/000-system-root.patch
-    cp %{P:1} patches/v8/000-system-root.patch
-    cp %{P:2} patches/000-readdir-r-fix.patch
-    cp %{P:4} patches/000-dmabuf-fix.patch
-    mkdir -p patches/third_party/libdrm
-    cp %{P:3} patches/third_party/libdrm/000-multi-fix.patch
-    mkdir -p patches/third_party/WebKit
-    cp %{P:5} patches/third_party/WebKit/000-missing-functional-import.patch
-    # one-time setup
-    ./script/bootstrap
-    # build
-    ./script/update --target_arch %{arch}
-    ./script/build --target_arch %{arch} --no_shared_library
-    echo $CURRENT_VERSION > $CC_COMPILED_VERSION_FILE
+      # place the patches
+      cp %{P:0} patches/000-system-root.patch
+      cp %{P:1} patches/v8/000-system-root.patch
+      cp %{P:2} patches/000-readdir-r-fix.patch
+      cp %{P:4} patches/000-dmabuf-fix.patch
+      mkdir -p patches/third_party/libdrm
+      cp %{P:3} patches/third_party/libdrm/000-multi-fix.patch
+      mkdir -p patches/third_party/WebKit
+      cp %{P:5} patches/third_party/WebKit/000-missing-functional-import.patch
+      # one-time setup
+      ./script/bootstrap
+      # build
+      ./script/update --target_arch %{arch}
+      ./script/build --target_arch %{arch} --no_shared_library
+      ./script/create-dist --target_arch=%{arch} --no_zip --component=static_library
+
+      echo $CURRENT_VERSION > $CC_COMPILED_VERSION_FILE
     popd
   fi
 %endif
