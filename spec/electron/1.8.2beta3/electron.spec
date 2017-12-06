@@ -14,7 +14,7 @@
 Name:    electron
 Version: %{version}
 Release: 1%{dist}
-Summary: A hack-able text editor for the 21st century
+Summary: Framework for build cross-platform desktop applications
 
 Group:   Applications/System
 License: MIT

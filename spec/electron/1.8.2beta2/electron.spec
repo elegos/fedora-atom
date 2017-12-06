@@ -1,4 +1,4 @@
-%global version 1.8.2_beta.2
+%global version 1.8.2_beta.3
 %global e_dir %{_builddir}/electron
 %global arch %(test $(rpm -E%?_arch) = x86_64 && echo "x64" || echo "ia32")
 
@@ -14,7 +14,7 @@
 Name:    electron
 Version: %{version}
 Release: 1%{dist}
-Summary: A hack-able text editor for the 21st century
+Summary: Framework for build cross-platform desktop applications
 
 Group:   Applications/System
 License: MIT
