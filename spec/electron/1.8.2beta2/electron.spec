@@ -176,6 +176,8 @@ echo '%{node_ver}' > "${_headers_dest}/installVersion"
 
 %files
 %defattr(-,root,root,-)
+%doc electron/README.md
+%license electron/LICENSE
 %{_bindir}/%{name}
 %{_libdir}/%{name}/
 
