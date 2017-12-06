@@ -7,6 +7,9 @@ IMG=fedora_build_atom
 mkdir -p build/RPMS
 mkdir -p build/SRPMS
 
+TARGET=
+VERSION=
+
 while [[ "$1" == --* ]]; do
 	case "$1" in
 		"--verbose-docker-build")
@@ -33,6 +36,19 @@ while [[ "$1" == --* ]]; do
 
 			mkdir -p build/BUILD
 			mkdir -p build/BUILDROOT
+		;;
+		"--target")
+			if ! [ "$2" = "" ]; then
+				TARGET=$2
+				shift
+			fi
+		;;
+		"--version")
+			if ! [ "$2" = "" ]; then
+				VERSION=$2
+				shift
+			fi
+		;;
 	esac
 	shift
 done
@@ -52,15 +68,37 @@ function say {
 		-e "s/@u/$(tput sgr 0 1)/g"
 }
 
+function build {
+	mkdir -p build/RPMS
+	mkdir -p build/SRPMS
+	docker run --rm -ti ${EXTERNAL_SRC} \
+	  --volume `pwd`/spec:/home/makerpm/spec:ro \
+		--volume `pwd`/build/RPMS:/home/makerpm/rpmbuild/RPMS \
+		--volume `pwd`/build/SRPMS:/home/makerpm/rpmbuild/SRPMS \
+		${IMG} --target $1 --version $2
+}
+
+function buildElectron {
+	say "@b[[Building electron (version $1)...]]"
+	build electron $1
+}
+
 say "@b[[Building docker image...]]"
-docker build -t ${IMG} $DOCKER_BUILD_QUIET \
+docker build -t ${IMG} ${DOCKER_BUILD_QUIET} \
  	--build-arg UID=`id -u` .
 
-say "@b[[Building...]]"
-mkdir -p build/RPMS
-mkdir -p build/SRPMS
-docker run --rm -ti ${EXTERNAL_SRC} \
-  --volume `pwd`/spec:/home/makerpm/spec:ro \
-	--volume `pwd`/build/RPMS:/home/makerpm/rpmbuild/RPMS \
-	--volume `pwd`/build/SRPMS:/home/makerpm/rpmbuild/SRPMS \
-	${IMG} --target electron --version 1.8.2beta3
+if ! [ "${TARGET}" = "" ] && [ "${VERSION}" ]; then
+	if ! [ -d `pwd`/spec/${TARGET} ]; then
+		say "@b@red[[Invalid target ${TARGET}]]"
+		exit 1
+	fi
+
+	if ! [ -d `pwd`/spec/${TARGET}/${VERSION} ]; then
+		say "@b@red[[Invalid version ${VERSION}]]"
+		exit 1
+	fi
+
+	build ${TARGET} ${VERSION}
+else
+	buildElectron 1.8.2beta3
+fi
