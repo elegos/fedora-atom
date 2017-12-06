@@ -1,0 +1,11 @@
+--- a/build/config/sysroot.gni
++++ b/build/config/sysroot.gni
+@@ -15,7 +15,7 @@ declare_args() {
+   # The absolute path to directory containing linux sysroot images
+   target_sysroot_dir = "//build/linux"
+ 
+-  use_sysroot = true
++  use_sysroot = false
+ }
+ 
+ if (current_os == target_os && current_cpu == target_cpu &&

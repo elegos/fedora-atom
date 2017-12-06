@@ -1,0 +1,22 @@
+--- a/toolchain.gypi
++++ b/toolchain.gypi
+@@ -59,7 +59,7 @@
+               'sysroot%': '<(source_root)/vendor/debian_jessie_i386-sysroot',
+             }],
+             ['target_arch=="x64"', {
+-              'sysroot%': '<(source_root)/vendor/debian_jessie_amd64-sysroot',
++              'sysroot%': '/',
+             }],
+           ],
+         },
+@@ -148,8 +148,8 @@
+               '--sysroot=<(sysroot)',
+             ],
+             'ldflags': [
+-              '--sysroot=<(sysroot)',
+-              '<!(<(source_root)/tools/linux/sysroot_ld_path.sh <(sysroot))',
++              #'--sysroot=<(sysroot)',
++              #'<!(<(source_root)/tools/linux/sysroot_ld_path.sh <(sysroot))',
+             ],
+           }]
+         ],

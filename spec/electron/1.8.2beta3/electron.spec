@@ -1,4 +1,4 @@
-%global version 1.8.2_beta.2
+%global version 1.8.2_beta.3
 %global e_dir %{_builddir}/electron
 %global arch %(test $(rpm -E%?_arch) = x86_64 && echo "x64" || echo "ia32")
 
@@ -85,7 +85,7 @@ fi
 pushd %{e_dir}
   git reset --hard
   git fetch --all
-  git checkout v1.8.2-beta.2
+  git checkout v1.8.2-beta.3
   git submodule update --init --recursive
   # Reset the submodules to apply the patches multiple times
   pushd %{e_dir}/vendor/node && git reset --hard && popd
@@ -180,6 +180,10 @@ echo '%{node_ver}' > "${_headers_dest}/installVersion"
 %{_libdir}/%{name}/
 
 %changelog
+* Wed Dec 06 2017 Giacomo Furlan <elegos@fastwebnet.it> - 1.8.2 beta 3
+- Release v1.8.2 beta 3
+- https://github.com/electron/electron/releases/tag/v1.8.2-beta.3
+
 * Wed Dec 06 2017 Giacomo Furlan <elegos@fastwebnet.it> - 1.8.2 beta 2
 - Release v1.8.2 beta 2
 - https://github.com/electron/electron/releases/tag/v1.8.2-beta.2
