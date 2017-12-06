@@ -2,6 +2,11 @@
 %global e_dir %{_builddir}/electron
 %global arch %(test $(rpm -E%?_arch) = x86_64 && echo "x64" || echo "ia32")
 
+# These libraries are bundled with the package
+%global __requires_exclude (libnode|libffmpeg)
+
+%global __provides_exclude_from %{_libdir}/{%name}
+
 # Required for missing function references in linking process
 %global compile_cc 1
 %global cc_dir %{_builddir}/libchromiumcontent
@@ -141,10 +146,39 @@ pushd %{e_dir}
 popd
 
 %install
+# Install Electron
+cd %{e_dir}/dist
+# These libraries are provided with the bundle
+strip %{name} *.so
+
+install -d %{buildroot}%{_libdir}/%{name}
+install -m644 \
+  *.pak *.json *.ts *.dat *.so *.bin version \
+  %{buildroot}%{_libdir}/%{name}
+install -m755 electron chromedriver mksnapshot %{buildroot}%{_libdir}/%{name}
+install -d %{buildroot}%{_bindir}
+ln -sfv %{_libdir}/%{name}/%{name} %{buildroot}%{_bindir}
+cp -r electron.breakpad.syms locales resources %{buildroot}%{_libdir}/%{name}
+
+# Install Node headers
+_headers_dest="%{buildroot}%{_libdir}/%{name}/node"
+install -d -m755 ${_headers_dest}
+
+cd %{e_dir}/vendor/node
+find src deps/http_parser deps/zlib deps/uv deps/npm \
+  -name "*.gypi" \
+    -exec install -D -m644 '{}' "${_headers_dest}/{}" \; -or \
+  -name "*.h" \
+    -exec install -D -m644 '{}' "${_headers_dest}/{}" \;
+install -m644 {common,config}.gypi "${_headers_dest}"
+echo '%{node_ver}' > "${_headers_dest}/installVersion"
 
 %files
+%defattr(-,root,root,-)
+%{_bindir}/%{name}
+%{_libdir}/%{name}/
 
 %changelog
-* Thu Nov 23 2017 Giacomo Furlan <elegos@fastwebnet.it> - 1.8.1
-- Release v1.8.1
-- https://github.com/electron/electron/releases/tag/v1.8.1
+* Wed Dec 06 2017 Giacomo Furlan <elegos@fastwebnet.it> - 1.8.2 beta 2
+- Release v1.8.2 beta 2
+- https://github.com/electron/electron/releases/tag/v1.8.2-beta.2
