@@ -7,7 +7,7 @@
 %global __requires_exclude_from %{nodejs_sitelib}/.*/node_modules
 %global __requires_exclude (npm)
 
-Name:    nodejs-atom-package-manager
+Name:    atom-package-manager
 Version: %{version}
 Release: 1%{dist}
 Summary: Atom package manager
