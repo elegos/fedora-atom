@@ -44,6 +44,15 @@ RUN dnf install -y \
     pulseaudio-libs-devel \
     which
 
+# apm
+RUN dnf install -y \
+    coffee-script \
+    libsecret-devel \
+    nodejs-packaging
+
+# https://github.com/npm/npm/issues/17858
+RUN npx npmc@latest install
+
 # Create a packager user
 RUN useradd makerpm -o -u $UID \
   && usermod -a -G mock makerpm

@@ -83,6 +83,11 @@ function buildElectron {
 	build electron $1
 }
 
+function buildApm {
+	say "@b[[Building apm (version $1)...]]"
+	build apm $1
+}
+
 say "@b[[Building docker image...]]"
 docker build -t ${IMG} ${DOCKER_BUILD_QUIET} \
  	--build-arg UID=`id -u` .
@@ -101,4 +106,5 @@ if ! [ "${TARGET}" = "" ] && [ "${VERSION}" ]; then
 	build ${TARGET} ${VERSION}
 else
 	buildElectron 1.8.2beta3
+	buildApm 1.18.11
 fi
