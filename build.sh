@@ -2,7 +2,8 @@
 
 EXTERNAL_SRC=""
 DOCKER_BUILD_QUIET="-q"
-IMG=fedora_build_atom
+#IMG=fedora_build_atom
+IMG=fedora_build_atom_atom
 
 mkdir -p build/RPMS
 mkdir -p build/SRPMS
@@ -88,9 +89,16 @@ function buildApm {
 	build apm $1
 }
 
+function buildAtom {
+	say "@b[[Building atom (version $1)...]]"
+	build atom $1
+}
+
 say "@b[[Building docker image...]]"
+#docker build -t ${IMG} ${DOCKER_BUILD_QUIET} \
+# 	--build-arg UID=`id -u` .
 docker build -t ${IMG} ${DOCKER_BUILD_QUIET} \
- 	--build-arg UID=`id -u` .
+ 	--build-arg UID=`id -u` --file Dockerfile.atom .
 
 if ! [ "${TARGET}" = "" ] && [ "${VERSION}" ]; then
 	if ! [ -d `pwd`/spec/${TARGET} ]; then
@@ -107,4 +115,5 @@ if ! [ "${TARGET}" = "" ] && [ "${VERSION}" ]; then
 else
 	buildElectron 1.8.2beta3
 	buildApm 1.18.11
+	buildAtom 1.22.1
 fi

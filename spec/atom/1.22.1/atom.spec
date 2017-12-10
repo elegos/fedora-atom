@@ -1,6 +1,7 @@
-%global version 1.18.11
+%global version 1.22.1
+%global electron_ver 1.8.2
 %global arch %(test $(rpm -E%?_arch) = x86_64 && echo "x64" || echo "ia32")
-%global srcdir %{_builddir}/apm
+%global srcdir %{_builddir}/atom
 
 %global __provides_exclude_from %{nodejs_sitelib}/.*/node_modules
 %global __requires_exclude_from %{nodejs_sitelib}/.*/node_modules
@@ -13,17 +14,15 @@ Summary: Atom package manager
 
 Group:   Applications/System
 License: MIT
-URL:     https://github.com/atom/apm
+URL:     https://github.com/atom/atom
 
-BuildRequires: coffee-script
-BuildRequires: git
-BuildRequires: libsecret-devel
-BuildRequires: nodejs-packaging
-BuildRequires: npm
+BuildRequires: node-gyp
+BuildRequires: nodejs
 
 %description
-apm - Atom Package Manager
-Discover and install Atom packages powered by https://atom.io
+Atom is a text editor that's modern, approachable, yet hack-able to the core
+- a tool you can customize to do anything but also use productively without
+ever touching a config file.
 
 %prep
 if ! [ -d %{srcdir}/.git ]; then
@@ -34,19 +33,23 @@ pushd %{srcdir}
   git reset --hard
   git fetch --all
   git checkout v%{version}
-  rm package-lock.json
 popd
 
 %build
 export CFLAGS="%{optflags}"
 export CXXFLAGS="%{optflags}"
-
+export npm_config_cache="${HOME}/.atom/.npm"
+export npm_config_disturl="https://atom.io/download/atom-shell"
+export npm_config_target="%{electron_ver}"
+export npm_config_runtime="electron"
+export ATOM_ELECTRON_VERSION="%{electron_ver}"
+export ATOM_ELECTRON_URL="$npm_config_disturl"
+export ATOM_RESOURCE_PATH=%{srcdir}
+export ATOM_HOME="$npm_config_cache"
 pushd %{srcdir}
-  # Compile the coffee sources
-  ${Coffee:-coffee} -c --no-header -o lib src/*.coffee
-  # Install the node dependencies
-  npm install --loglevel info -g --prefix build
+  ./script/build --install=%{buildroot}/usr
 popd
+exit 1
 
 %install
 cd %{srcdir}
