@@ -12,6 +12,7 @@ RUN dnf install -y \
     git
 
 RUN dnf install -y \
+    libsecret-devel \
     node-gyp \
     nodejs
 

@@ -1,5 +1,5 @@
 %global version 1.22.1
-%global electron_ver 1.8.2
+%global electron_ver 1.8.2-beta.3
 %global arch %(test $(rpm -E%?_arch) = x86_64 && echo "x64" || echo "ia32")
 %global srcdir %{_builddir}/atom
 
@@ -16,6 +16,7 @@ Group:   Applications/System
 License: MIT
 URL:     https://github.com/atom/atom
 
+BuildRequires: libsecret-devel
 BuildRequires: node-gyp
 BuildRequires: nodejs
 
@@ -39,7 +40,7 @@ popd
 export CFLAGS="%{optflags}"
 export CXXFLAGS="%{optflags}"
 export npm_config_cache="${HOME}/.atom/.npm"
-export npm_config_disturl="https://atom.io/download/atom-shell"
+export npm_config_disturl="https://atom.io/download/electron"
 export npm_config_target="%{electron_ver}"
 export npm_config_runtime="electron"
 export ATOM_ELECTRON_VERSION="%{electron_ver}"
